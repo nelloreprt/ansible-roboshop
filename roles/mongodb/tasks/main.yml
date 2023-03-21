@@ -1,0 +1,29 @@
+- name: Setup the MongoDB repo file
+  ansible.builtin.copy:
+    src: mongo.repo
+    dest: /etc/yum.repos.d/mongo.repo
+
+- name: Install MongoDB
+  ansible.builtin.yum:
+    name: mongodb-org
+    state: present
+
+- name: Start & Enable mongod service
+  ansible.builtin.systemd:
+    name: mongod
+    state: started
+    enabled: yes
+
+- name: Update MongoDB Listen Address
+  ansible.builtin.replace:
+    path: /etc/mongod.conf
+    regexp: '127.0.0.1'
+    replace: '0.0.0.0'
+
+
+- name: ReStart mongod service
+  ansible.builtin.systemd:
+    name: mongod
+    state: started
+
+# $ ansible-palybook -i mongodb.nellore.online, -e ansible_user=centos -e ansible_password=DevOps1 -e  roboshop.yml

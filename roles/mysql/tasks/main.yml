@@ -1,0 +1,37 @@
+
+# In playbook ansible itself will check and throw an error if variable is missing
+
+- name: Disable Mysql
+  Ansible.builtin.shell: dnf module disable mysql -y
+
+- name: Copy Mysql repo file
+  ansible.builtin.copy:
+    src: mysql.repo
+    dest: /etc/yum.repos.d/mysql.repo
+
+- name: Install Mysql server
+  ansible.builtin.yum:
+    name: mysql-community-server
+    state: installed
+
+- name: MySql SERVICE enable & Start
+  ansible.builtin.systemd:
+    state: restarted
+    name: mysqld
+    enabled: true
+
+- name: change the default root password
+  Ansible.builtin.shell: mysql_secure_installation --set-root-pass {{root_mysql_password}}
+  ignore_errors: yes
+
+# Note >> when u rerun mysql playbook,
+# it will throw an error with return code > rc: 1 >>
+# when password is already reset/changed  >> this is a expected behaviour,
+# we have to proceed to continue with the playbook by handling the error using >> ignore_errors: yes
+
+# Run MYSQL component >> ensure to pass password variable for >> root_mysql_password
+
+# $ ansible-playbook -i cart-dev.nellore.online, roboshop.yml -e ROLE_NAME=cart -e ansible_user=centos
+# -e ansible_password=DevOps321 -e root_mysql_password=RoboShop@1
+
+

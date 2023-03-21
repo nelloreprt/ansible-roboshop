@@ -1,0 +1,30 @@
+# note: mongodb-schema.yml is also designed in the same way as mysql-schema.yml is designed
+
+
+- name: Install Python Deps
+  ansible.builtin.yum:
+    name:
+      - python3-PyMySQL
+      - mysql
+    state: installed
+# on the target machine we need to install
+- python3-PyMySQL
+- mysql
+only after installing , LOAD SCHEMA will work
+
+- name: Load MySQL Schema
+  community.mysql.mysql_db:
+    state: import
+    name: all
+    target: /app/schema/{{component}}.sql
+    login_host: mysql-dev.nellore.online
+    login_user: root
+    login_password: "{{root_mysql_password}}"
+# Run MYSQL component >> ensure to pass password variable for >> root_mysql_password
+
+# ansible module to load schema is >> " community.mysql.mysql_db "
+which has got details like
+host
+username
+password
+target

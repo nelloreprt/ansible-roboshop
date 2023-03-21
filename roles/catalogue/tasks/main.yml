@@ -1,0 +1,5 @@
+- name: Import nodejs.yml instead of 'main'
+    ansible.builtin.import_role:
+      name: common
+      tasks_from: nodejs
+# Now the point is we need to import a role called COMMON ROLE to >> catalogue/tasks/main.yml

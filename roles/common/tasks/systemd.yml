@@ -1,0 +1,13 @@
+- name: Copy file with owner and permissions
+  ansible.builtin.template:
+    src: "{{component}}".service
+    dest: /etc/systemd/system/{{component}}.service
+# since the value is starting with variable "{{component}}" we have to use double quotes >> ""
+
+- name: Start & Enable Nginx service
+  ansible.builtin.systemd:
+    name: {{component}}
+    state: restarted
+    enabled: yes
+    daemon_reload: true
+# by default daemon_reload is set to false, we need to set it to true >> daemon_reload: true

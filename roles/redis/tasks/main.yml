@@ -1,0 +1,45 @@
+- name: Install Redis
+  ansible.builtin.yum:
+    name: https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+    state: installed
+    disable_gpg_check: true
+
+# Because of this error >> failed to validate gpg signature,
+# Disable_gpg_check >> by default is false,
+# So disable gpg chek >> make it >> true
+
+- name: redis dnf 6.2 module
+  Ansible.builtin.shell: dnf module enable redis:remi-6.2 -y
+# Note: If the module is not available and if you need to run some command, then use SHELL module
+
+- name: Install Redis
+  ansible.builtin.yum:
+    name: redis
+    state: installed
+
+- name: Update Redis Listen Address
+  ansible.builtin.replace:
+    path: {{ item }}
+    regexp: '127.0.0.1'
+    replace: '0.0.0.0'
+  loop:
+     - /etc/redis/redis.conf
+     - /etc/redis.conf
+
+# Notes: As the same value to be replaced in two different paths loop of type LIST is used
+
+# - name: Loops Type-2 MAP type
+#   ansible.builtin.replace:
+       # path: fruit name is {{ item.name }} and fruit count is {{ item.number }}
+       # regexp: '127.0.0.1'
+       # replace: '0.0.0.0'
+    # loop:
+       # {name: apple, number: 100}
+       # {name: banana, number: 500}
+
+- name: Redis SERVICE enable & Start
+  ansible.builtin.systemd:
+    state: restarted
+    name: redis
+    enabled: true
+

@@ -1,0 +1,41 @@
+- name: Setup NodeJS repos
+  Ansible.builtin.shell: curl -sL https://rpm.nodesource.com/setup_lts.x | bash
+
+- name: Install NodeJS
+  Ansible.builtin.yum:
+    name: nodejs
+    state: present
+
+# we need to import task
+# but the file you are using as part of the import shall be available on the REMOTE / Target machine
+# so the other option will be >> include_tasks
+- name: app directory
+  ansible.builtin.include_tasks: "app-dir.yml"
+
+- name: Lets download the dependencies..
+  community.general.npm:
+    path: /app
+    state: present
+# community.general.npm >> is the module from ansible galaxy which is a community
+
+- name: SystemD setup
+  ansible.builtin.include_tasks: "systemd.yml"
+
+# we need to import task
+# but the file you are using as part of the import shall be available on the REMOTE / Target machine
+# so the other option will be >> include_tasks
+- name: Load Schema
+  ansible.builtin.include_tasks: "{{schema_type}}-schema.yml"
+  when: Schema_load
+
+
+
+
+
+
+
+
+
+
+
+

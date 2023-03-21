@@ -1,0 +1,28 @@
+# note: mysql-schema.yml is also designed in the same way as mongodb-schema.yml is designed
+
+- name: Copy file to /etc/yum.repos.d/mongo.repo
+  ansible.builtin.copy:
+    src: mongo.repo
+    dest: /etc/yum.repos.d/mongo.repo
+#  when: Schema_load
+# mongo.repo file is common for both the catalogue+user, so all common tasks, variables & FILES are moved to common role
+# when: Schema_load >> BOOLEAN condition is used
+
+- name: install mongodb-org-shell
+  Ansible.builtin.yum:
+    name: mongodb-org-shell
+    state: present
+#  when: Schema_load
+# when: Schema_load >> BOOLEAN condition is used
+
+- name: Load Schema
+  community.mongodb.mongodb_schema:
+    login_host: mongodb.nellore.online
+    file: "/app/schema/{{component}}.js"
+    idempotent: yes
+#  when: Schema_load
+# when: Schema_load >> BOOLEAN condition is used
+# Notes for >> community.mongodb.mongodb_schema:
+#idempotent: yes >> means this “community.mongodb.mongodb_shell” is not developed in idempotent way,
+# >> in terms of file_module if file is not there then the module will make available,
+# if file is there then module will leave the file undisturbed

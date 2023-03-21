@@ -1,0 +1,47 @@
+
+
+- name: install maven, This indeed takes care of java installation.
+  ansible.builtin.yum:
+    name: maven
+    state: present
+
+- name: INCLUDE_TASKS app-dir.yml instead of 'main'
+  ansible.builtin.include_tasks: "app-dir.yml"
+
+- name: mvn clean package
+  Ansible.builtin.shell: mvn clean package
+  args:
+    chdir: /app
+# the maven clean pakage command should run inside a directory /app, for which we are using
+#  args:
+#    chdir: /app
+
+# two commands in a shell module can we run using semi collan "; "
+  mvn clean package ; mv target/{{component}}-1.0.jar {{component}}.jar
+
+- name: mv target/shipping-1.0.jar shipping.jar
+  ansible.builtin.shell: mv target/{{component}}-1.0.jar {{component}}.jar
+
+- name: SystemD setup
+  ansible.builtin.include_tasks: "systemd.yml"
+# in order to keep the code DRY, systemD service is put inside common/tasks/systemd.yml,
+# in order to reduce repetetion of systemd service commands, and the same is used here using INCLUDE_TASKS
+
+
+
+
+
+# we need to import task
+# but the file you are using as part of the import shall be available on the REMOTE / Target machine
+# so the other option will be >> include_tasks
+- name: Load MYSQL Schema
+  ansible.builtin.include_tasks: "{{schema_type}}-schema.yml"
+  when: Schema_load
+# Run MYSQL component >> ensure to pass password variable for >> root_mysql_password
+
+# $ ansible-playbook -i cart-dev.nellore.online, roboshop.yml -e ROLE_NAME=cart -e ansible_user=centos
+# -e ansible_password=DevOps321 -e root_mysql_password=RoboShop@1
+
+
+
+

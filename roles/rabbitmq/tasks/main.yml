@@ -1,0 +1,39 @@
+- name: Configure YUM Repos from the script provided by vendor.
+  Ansible.builtin.shell: {{item}}
+  loop:
+     - curl -s https://packagecloud.io/install/repositories/rabbitmq/erlang/script.rpm.sh | sudo bash
+     - curl -s https://packagecloud.io/install/repositories/rabbitmq/rabbitmq-server/script.rpm.sh | sudo bash
+# to keep the code DRY, we are using loops as same task is repeted with different path
+
+- name: Install ErLang
+  Ansible.builtin.yum:
+    name:
+      - erlang
+      - rabbitmq-server
+    state: present
+# to keep the code DRY, using yum module, multiple applications are installed
+
+- name: Start & Enable rabbitmq-server service
+  ansible.builtin.systemd:
+    name: rabbitmq-server
+    state: restarted
+    enabled: yes
+# instead of started, better to use restarted, because instead any change comes into picture, it is better to restart
+
+- name: RabbitMq we need to create one user for the application.
+  community.rabbitmq.rabbitmq_user:
+    user: roboshop
+    password: {{ roboshop_rabbitmq_password }}
+    vhost: /
+    configure_priv: .*
+    read_priv: .*
+    write_priv: .*
+    state: present
+    tags: administrator
+# this is a rabbitmq_module of ansible, ensure to pass the password as variable without hardcoding the password
+
+  $ ansible-playbook -i rabbitmq-dev.nellore.online, roboshop.yml 
+  -e ROLE_NAME=rabbitmq -e ansible_user=centos -e ansible_password=DevOps321 
+  -e HOSTS=all
+  -e root_rabbitmq_password=RoboShop@1
+

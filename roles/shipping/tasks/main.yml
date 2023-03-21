@@ -1,0 +1,5 @@
+- name: Import java.yml instead of 'main'
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: java
+# Now the point is we need to import a role called COMMON ROLE to >> shipping/tasks/main.yml

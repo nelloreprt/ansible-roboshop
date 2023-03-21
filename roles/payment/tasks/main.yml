@@ -1,0 +1,31 @@
+- name: Install Python 3.6
+  ansible.builtin.yum:
+    name:
+    - python36
+    - gcc
+    - python3-devel
+    state: present
+
+- name: Import app-dir.yml instead of 'main'
+  ansible.builtin.import_role:
+        name: common
+        tasks_from: app-dir
+  # Now the point is we need to import a role called COMMON ROLE to >> user/tasks/main.yml
+
+- name: Install specified python requirements & Lets download the dependencies.
+  ansible.builtin.pip:
+    requirements: /app/requirements.txt
+    executable: pip3.6
+# if you have requirements.txt >> then use ansible pip module
+# the pip3.6 install -r requirements.txt command should run inside a directory /app, for which we are using
+#  args:
+#    chdir: /app
+
+- name: Import systemd.yml instead of 'main'
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: systemd
+  # Now the point is we need to import a role called COMMON ROLE to >> payment/tasks/main.yml
+  # we have used JINJA Templates in systemd.yml
+  # template is going to replace that particular value while it is copying it, from variable value given in cli
+  # {{root_rabbitmq_password}} >> root_rabbitmq_password=Roboshop@1
