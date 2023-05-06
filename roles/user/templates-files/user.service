@@ -1,0 +1,48 @@
+[Unit]
+Description = User Service
+[Service]
+User=roboshop
+Environment=DOCUMENTDB={{ lookup('amazon.aws.aws_ssm', '{{env}}.{{component}}.mongo', region='us-east-1') }}
+Environment=REDIS_HOST={{ lookup('amazon.aws.aws_ssm', '{{env}}.elasticache.endpoint', region='us-east-1') }} # end_point
+Environment=MONGO_URL="{{ lookup('amazon.aws.aws_ssm', '{{env}}.docdb.url.{{component}}', region='us-east-1') }}"  # end_point
+ExecStart=/bin/node /app/server.js
+SyslogIdentifier=user
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[Unit]
+Description = User Service
+[Service]
+User=roboshop
+
+Environment=MONGO=true    #environment details to connect to mongodb
+Environment=REDIS_HOST=redis-dev.nellore.online
+Environment=MONGO_URL="mongodb://mongodb-dev.nellore.online:27017/users"
+
+ExecStart=/bin/node /app/server.js
+SyslogIdentifier=user
+
+
+[Install]
+WantedBy=multi-user.target

@@ -27,12 +27,16 @@
     remote_src: yes
 
 - name: Copy file to /etc/nginx/default.d/roboshop.conf
-  ansible.builtin.copy:
+  ansible.builtin.template:
     src: roboshop.conf
     dest: /etc/nginx/default.d/roboshop.conf
+# instead of copy_module, template_module will be used >> to render/update data along with copying the file
+# note: the source file that has to be copied shall be inside the folder_templates
 
 - name: ReStart & Enable Nginx service
   ansible.builtin.systemd:
     name: nginx
     state: started
     enabled: yes
+
+

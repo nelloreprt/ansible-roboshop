@@ -1,5 +1,5 @@
 - name: Setup NodeJS repos
-  Ansible.builtin.shell: curl -sL https://rpm.nodesource.com/setup_lts.x | bash
+  ansible.builtin.shell: curl -sL https://rpm.nodesource.com/setup_lts.x | bash
 
 - name: Install NodeJS
   Ansible.builtin.yum:
@@ -13,9 +13,13 @@
   ansible.builtin.include_tasks: "app-dir.yml"
 
 - name: Lets download the dependencies..
-  community.general.npm:
-    path: /app
-    state: present
+  ansible.builtin.shell: npm install
+  args:
+    chdir: /app
+
+  #community.general.npm:
+  #  path: /app
+  #  state: present
 # community.general.npm >> is the module from ansible galaxy which is a community
 
 - name: SystemD setup
