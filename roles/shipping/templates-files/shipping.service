@@ -3,8 +3,15 @@ Description=Shipping Service
 
 [Service]
 User=roboshop
-Environment=CART_ENDPOINT=<CART-SERVER-IPADDRESS>:8080
-Environment=DB_HOST=<MYSQL-SERVER-IPADDRESS>
+
+# shipping depends on mysql >> aws_RDS
+
+#1 update the port number in parameters to 80
+Environment=CART_ENDPOINT={{ lookup('amazon.aws.aws_ssm', '{{env}}.{{component}}.cart_endpoint', region='us-east-1') }}
+
+#2
+Environment=DB_HOST={{ lookup('amazon.aws.aws_ssm', '{{env}}.rds.endpoint', region='us-east-1') }}  # rds_db end_point
+
 ExecStart=/bin/java -jar /app/shipping.jar
 SyslogIdentifier=shipping
 
